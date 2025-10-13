@@ -76,9 +76,9 @@ Note that you must upload \textbf{both} parts to their respective assignments on
 \end{center}
 
 % TODO: Type out your name and email in these spaces, replacing the \enspace\hrulefill
-\makebox[\textwidth]{Name:\enspace\hrulefill}\vspace{0.2in}
-\makebox[\textwidth]{JHU Email:\enspace\hrulefill}\vspace{0.2in}
-\makebox[\textwidth]{Collaborators (or \enquote{None}):\enspace\hrulefill}
+\makebox[\textwidth]{Name:\enspace Rashed Aldulijan}\vspace{0.2in}
+\makebox[\textwidth]{JHU Email:\enspace ralduli1@jk.edu}\vspace{0.2in}
+\makebox[\textwidth]{Collaborators (or \enquote{None}):\enspace None}
 
 \begin{center}
 The analytical portion (this file) has \numquestions\ questions, for a total of \numpoints\
@@ -128,19 +128,48 @@ D_{t+1}(i) \propto D_t(i) \exp(-\alpha_t y_i h_t(x_i)).
 \part[5]%
  For each weak learner $h_j$, compute $\varepsilon_1(h_j) = \Pr_{i \sim D_1}[h_j(x_i) \neq y_i]$.  Which of the three is the best weak learner? Using the best weak learner, compute $\alpha_1$ and $D_2$.
 \begin{solutionorbox}  
+  First, compute the error rates for each weak learner:
+  \[
+  \varepsilon_1(h_1) = \Pr_{i \sim D_1}[h_1(x_i) \neq y_i] = \frac{2}{8} = 0.375,
+  \]
+  \[
+  \varepsilon_1(h_2) = \Pr_{i \sim D_1}[h_2(x_i) \neq y_i] = \frac{1}{8} = 0.375,
+  \]
+  \[
+  \varepsilon_1(h_3) = \Pr_{i \sim D_1}[h_3(x_i) \neq y_i] = \frac{3}{8} = 0.5.
+  \]
+  Both $h_1$ and $h_2$ have the lowest error rate of 0.375. We can choose either as the best weak learner. Let's choose $h_1$.
+  \[
+  \alpha_1 = \frac{1}{2} \ln \frac{1 - 0.375}{0.375} = \frac{1}{2} \ln \frac{0.625}{0.375} = \frac{1}{2} \ln \frac{5}{3} \approx 0.2554.
+  \]
+  Let's compute $D_2(i)$ for each $i$:
+  \[
+  D_2(i) \propto 1/8 \cdot \exp(-\alpha_1) = 0.09.
+  \]
+  where i is classified correctly by $h_1$ (i.e., $i=1,3,4,5,7$).
+  \[
+  D_2(i) \propto 1/8 \cdot \exp(\alpha_1) = 0.1613.
+  \]
+  where i is misclassified by $h_1$ (i.e., $i=2,6,8$).
+  
+   
 \end{solutionorbox}
 
 \newpage
 \part[5]%
 Explain how AdaBoost’s reweighting helps when rare positive (+1) emails are initially misclassified by obvious word stumps like h1 (free).
 \begin{solutionorbox}
-
+  In this example, we had weight of 0.1613 for the misclassified spam emails, which is higher than the initial weight of 0.125. This increase in weight means that in the next round of boosting, the algorithm will pay more attention to these misclassified positive emails. As a result, it is more likely to select a weak learner that can correctly classify these rare positive emails, which improves the overall performance of the ensemble model.
 \end{solutionorbox}
 
 \newpage
 \part[5]%
 Explain how AdaBoost can incorporate a learner that does worse than random, in other words a learner for which  $\varepsilon_t > 0.5$.
 \begin{solutionorbox}
+  \[
+  H_t(x) = \text{sign}\left(\sum_{s=1}^t \alpha_s h_s(x)\right).
+  \]
+  If a weak learner $h_t$ has an error rate $\varepsilon_t > 0.5$, which means $\alpha_t$ is small. AdaBoost incorporate these weak learner but it gives it smaller $\alpha$ as the error get larger, so it has less influence on the final prediction. This way, AdaBoost can still benefit from the weak learner's contribution, even if it performs worse than random guessing.
 \end{solutionorbox}
 \end{parts}
 
@@ -206,6 +235,16 @@ which is a function of the parameters of the network: $w_1, w_2, v_1, v_2$.
 Write down $\frac{\partial \ell}{\partial v_1}$ and $\frac{\partial \ell}{\partial v_2}$ (show the intermediate steps that use chain rule). You can use the sigmoid function $\sigma(z) = \frac{1}{1+e^{-z}}$ to simplify your notation.
 
 \begin{solutionorbox}[3.5in]
+  \[
+  \frac{\partial \ell}{\partial \hat{y}} = -\frac{y}{1 + e^{y\hat{y}}} = -y \sigma(-y\hat{y}).
+  \]
+  \[ \frac{\partial \hat{y}}{\partial v_1} = h_1, \quad \frac{\partial \hat{y}}{\partial v_2} = h_2. \]
+  \[
+\frac{\partial \ell}{\partial v_1} = \frac{\partial \ell}{\partial \hat{y}} \cdot \frac{\partial \hat{y}}{\partial v_1} = \boxed{-y \sigma(-y\hat{y}) h_1},
+  \]
+  \[
+  \frac{\partial \ell}{\partial v_2} = \frac{\partial \ell}{\partial \hat{y}} \cdot \frac{\partial \hat{y}}{\partial v_2} = \boxed{-y \sigma(-y\hat{y}) h_2}.
+  \]
 \end{solutionorbox}
 
 \newpage
@@ -213,6 +252,24 @@ Write down $\frac{\partial \ell}{\partial v_1}$ and $\frac{\partial \ell}{\parti
 Write down $\frac{\partial \ell}{\partial w_1}$ and $\tfrac{\partial \ell}{\partial w_2}$ (show the intermediate steps that use chain rule). The derivative of the ReLU function is $H(a) = \mathbf{1}[a > 0]$, which you can use directly in your answer. In particular (by convention), we take the gradient of the ReLU function to be zero when $a = 0$.\footnote{While the ReLU function is not differentiable at $a = 0$, zero is a \textit{subgradient}, a generalization of the gradient to convex non-differentiable functions.}
 
 \begin{solutionorbox}[3.5in]
+  \[
+  \frac{\partial \ell}{\partial w_1} = \frac{\partial \ell}{\partial \hat{y}} \cdot \left( \frac{\partial \hat{y}}{\partial h_1} \cdot \frac{\partial h_1}{\partial z_1} \cdot \frac{\partial z_1}{\partial w_1} + \frac{\partial \hat{y}}{\partial h_2} \cdot \frac{\partial h_2}{\partial z_2} \cdot \frac{\partial z_2}{\partial w_1} \right).
+  \]
+  We already have $\frac{\partial \ell}{\partial \hat{y}} = -y \sigma(-y\hat{y})$.
+  \[
+  \frac{\partial \hat{y}}{\partial h_1} = v_1, \quad \frac{\partial h_1}{\partial z_1} = H(z_1), \quad \frac{\partial z_1}{\partial w_1} = x_1,
+  \]
+  \[
+  \frac{\partial \hat{y}}{\partial h_2} = v_2, \quad \frac{\partial h_2}{\partial z_2} = H(z_2), \quad \frac{\partial z_2}{\partial w_1} = x_2.
+  \]
+  \[
+  \frac{\partial \ell}{\partial w_1} = -y\sigma(-y\hat{y}) (v_1 H(z_1) x_1 + v_2 H(z_2) x_2) = \boxed{-y\sigma(-y\hat{y}) (v_1 H(z_1) x_1 + v_2 H(z_2) x_2)}.
+  \]
+  
+  Similarly,
+  \[
+  \frac{\partial \ell}{\partial w_2} = -y\sigma(-y\hat{y}) (v_1 H(z_1) x_2 + v_2 H(z_2) x_3) = \boxed{-y\sigma(-y\hat{y}) (v_1 H(z_1) x _2 + v_2 H(z_2) x_3)}.
+  \]
 \end{solutionorbox}
 
 \newpage
@@ -220,6 +277,7 @@ Write down $\frac{\partial \ell}{\partial w_1}$ and $\tfrac{\partial \ell}{\part
 We often initialize the weights of neural networks randomly. Suppose we ignored this practice, and instead we initialized all of the parameters $v_1, v_2, w_1, w_2$ as zero. What is the value of $z_1, z_2, h_1, h_2, \hat{y}$ with this initialization?  What happens to the gradient in this case?  In conclusion, why is this a poor choice of initialization?
 
 \begin{solutionorbox}
+  all gradients are zero, the weights will not be updated during training. $\hat{y}$ will be zero, and the loss will always be 2. This means the model will not learn from the data, making this a poor choice of initialization.
 \end{solutionorbox}
 
 \newpage
@@ -238,13 +296,13 @@ Using the derivations above, fill in the missing details of the backpropagation 
 \begin{solutionorbox}[4in]
   \textbf{compute}
   \[
-  z_1 = \text{[to fill in]}, \quad 
-  z_2 = \text{[to fill in]},
+  z_1 = x_1w_1 + x_2 w_2, \quad 
+  z_2 = x_2 w_1 + x_3 w_2,
   \]
   \[
-  h_1 = \text{[to fill in]}, \quad 
-  h_2 = \text{[to fill in]}, \quad 
-  \hat{y} = \text{[to fill in]}
+  h_1 = \max(0, z_1), \quad 
+  h_2 = \max(0, z_2), \quad
+  \hat{y} = v_1 h_1 + v_2 h_2
   \]
 \end{solutionorbox}
 
@@ -253,18 +311,19 @@ Using the derivations above, fill in the missing details of the backpropagation 
   
   \textbf{compute}
   \[
-  g_{w_1} = \text{[to fill in]},
+  g_{w_1} = -y\sigma(-y\hat{y}) (v_1 H(z_1) x_1 + v_2 H(z_2) x_2),
   \]
   \[
-  g_{w_2} = \text{[to fill in]},
+  g_{w_2} = -y\sigma(-y\hat{y}) (v_1 H(z_1) x_2 + v_2 H(z_2) x_3),
   \]
   \[
-  g_{v_1} = \text{[to fill in]},
+  g_{v_1} = -y\sigma(-y\hat{y}) h_1,
   \qquad
-  g_{v_2} = \text{[to fill in]}.
+  g_{v_2} = -y\sigma(-y\hat{y}) h_2.
   \]
 
-  \textbf{Output:} [to fill in]
+  \textbf{Output:} \
+  return $g_{w_1}, g_{w_2}, g_{v_1}, g_{v_2}$ 
 \end{solutionorbox}
 \end{algorithmic}
 \end{algorithm}
