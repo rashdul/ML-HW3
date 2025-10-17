@@ -77,7 +77,7 @@ Note that you must upload \textbf{both} parts to their respective assignments on
 
 % TODO: Type out your name and email in these spaces, replacing the \enspace\hrulefill
 \makebox[\textwidth]{Name:\enspace Rashed Aldulijan}\vspace{0.2in}
-\makebox[\textwidth]{JHU Email:\enspace ralduli1@jk.edu}\vspace{0.2in}
+\makebox[\textwidth]{JHU Email:\enspace ralduli1@jh.edu}\vspace{0.2in}
 \makebox[\textwidth]{Collaborators (or \enquote{None}):\enspace None}
 
 \begin{center}
@@ -340,7 +340,44 @@ One approach to regularization in a neural network model is dropout. During trai
 \part[5]
 We will consider a simple linear model $\hat{y} = w^\top x$, with dropout applied to the inputs $x$.  To start, derive the expectation and covariance matrix of the effective input vector $\tilde{x}$ when dropout is applied. Treat the inputs $x$ as fixed, so that dropout is the only source of randomness (and hence the only source of randomness to consider in computing expectation and covariance).
 
-\begin{solutionorbox}
+\begin{solutionorbox}[4in]
+
+  \[
+  z_i = 
+  \begin{cases}
+  0 & \text{with probability } p \\
+  \frac{1}{1-p} & \text{with probability } 1-p
+  \end{cases}
+  \]
+
+  \textbf{Expectation:}
+  \[
+  \mathbb{E}[\tilde{x}_i] = E[x_iz_i] = x_i E[z_i] = x_i \cdot (p \cdot 0 + (1-p) \cdot \frac{1}{1-p}) = x_i
+  \]
+
+  \[
+  \mathbb{E}[\tilde{x}] = x
+  \]
+
+  \textbf{Covariance:}
+  For $i \neq j$, dropout is independent, so
+  \[
+  \mathrm{Cov}[\tilde{x}_i, \tilde{x}_j] = 0
+  \]
+  \[
+  \mathrm{Var}[\tilde{x}_i] = \mathrm{Var}[x_i z_i] = x_i^2 \mathrm{Var}[z_i]
+  \]
+  \[
+  \mathrm{Var}[z_i] = E[z_i^2] - (E[z_i])^2 = (p \cdot 0^2 + (1-p) \cdot (\frac{1}{1-p})^2) - 1^2 = \frac{p}{1-p}
+  \]
+  \[
+  \mathrm{Var}[\tilde{x}_i] = x_i^2 \frac{p}{1-p}
+  \]
+  Thus, the covariance matrix is just the diagonal with entries:
+  \[
+  \mathrm{Cov}[\tilde{x}] = \mathrm{diag}\left( x_1^2 \frac{p}{1-p}, \ldots, x_d^2 \frac{p}{1-p} \right)
+  \]
+  This tells us that the variance of each input feature is scaled by its squared value and the dropout probability.
 \end{solutionorbox}
 
 \newpage
@@ -348,6 +385,32 @@ We will consider a simple linear model $\hat{y} = w^\top x$, with dropout applie
 Again, treating the data $y, x$ and the weights $w$ as fixed, show that the expected squared loss under dropout (i.e., during training) can be written as the original squared loss plus an extra penalty on the weights. 
 
 \begin{solutionorbox}
+  \[
+  \mathbb{E}[(y - w^\top \tilde{x})^2] = \mathbb{E}[y^2 - 2y w^\top \tilde{x} + (w^\top \tilde{x})^2]
+  \]
+  Since $y$ and $w$ are fixed, we have:
+  \[
+  = y^2 - 2y w^\top \mathbb{E}[\tilde{x}] + w^\top \mathbb{E}[\tilde{x} \tilde{x}^\top] w
+  \]
+  We already computed $\mathbb{E}[\tilde{x}] = x$. Now, we need to compute $\mathbb{E}[\tilde{x} \tilde{x}^\top]$:
+  \[
+  \mathbb{E}[\tilde{x} \tilde{x}^\top] = \mathrm{Cov}[\tilde{x}] + \mathbb{E}[\tilde{x}] \mathbb{E}[\tilde{x}]^\top = \mathrm{diag}\left( x_1^2 \frac{p}{1-p}, \ldots, x_d^2 \frac{p}{1-p} \right) + xx^\top
+  \]
+  So,
+  \[
+  w^\top \mathbb{E}[\tilde{x} \tilde{x}^\top] w = w^\top xx^\top w + w^\top \mathrm{diag}\left( x_1^2 \frac{p}{1-p}, \ldots, x_d^2 \frac{p}{1-p} \right) w
+  \]
+  The first term is just $(w^\top x)^2$, and the second term can be written as:
+  \[
+  = \sum_{i=1}^{d}(w_i^2 x_i^2) \frac{p}{1-p}
+  \]
+  Putting it all together:
+  \[
+  = y^2 - 2y w^\top x + (w^\top x)^2 + \sum_{i=1}^{d}(w_i^2 x_i^2) \frac{p}{1-p}
+  \]
+  \[
+  = (y - w^\top x)^2 + \sum_{i=1}^{d}(w_i^2 x_i^2) \frac{p}{1-p}
+  \]
 \end{solutionorbox}
 
 \newpage
@@ -355,6 +418,11 @@ Again, treating the data $y, x$ and the weights $w$ as fixed, show that the expe
 Interpret the penalty in (b). How is it related to $L_2$ (ridge) regularization? When does it differ?
 
 \begin{solutionorbox}
+  let's assume that $\lambda = \frac{p}{1-p}$, then the penalty term can be written as:
+  \[
+  \lambda \sum_{i=1}^{d} w_i^2 x_i^2
+  \]
+  This is similar to $L_2$ regularization, which penalizes the sum of the squares of the weights. However, in this case, the penalty is weighted by the square of the input features $x_i^2$. This means that features with larger values will contribute more to the penalty, effectively encouraging the model to reduce the weights associated with those features more than those with smaller values. This differs from standard $L_2$ regularization, which treats all weights equally regardless of the input feature values.
 \end{solutionorbox}
 \end{parts}
 
@@ -379,6 +447,13 @@ $$\hat{F}(\mathbf{x}) = \frac{1}{M} \sum_{i=1}^M \hat{f}_i(\mathbf{x})$$
 Calculate the expected prediction $E[\hat{F}(\mathbf{x})]$ for the Bagging ensemble. Use the expected prediction to determine the bias of the ensemble, $\mathrm{Bias}[\hat{F}(\mathbf{x})] = E[\hat{F}(\mathbf{x})] - f(\mathbf{x})$.
 
 \begin{solutionorbox}[4in]
+  \[
+  E[\hat{F}(\mathbf{x})] = E\left[\frac{1}{M} \sum_{i=1}^M \hat{f}_i(\mathbf{x})\right] = \frac{1}{M} \sum_{i=1}^M E[\hat{f}_i(\mathbf{x})] = \frac{1}{M} \sum_{i=1}^{M} f_i(\mathbf{x}) = f(\mathbf{x})
+  \]
+  Therefore, the bias of the ensemble is:
+  \[
+  \mathrm{Bias}[\hat{F}(\mathbf{x})] = E[\hat{F}(\mathbf{x})] - f(\mathbf{x}) = f(\mathbf{x}) - f(\mathbf{x}) = 0
+  \]
 \end{solutionorbox}
 
 \newpage
@@ -389,6 +464,21 @@ $$\mathrm{Var}[\hat{F}(\mathbf{x})] = \frac{\sigma^2}{M} + \rho \sigma^2 \left(1
 \textit{Hint: $\mathrm{Var}\left[\sum_{i=1}^M X_i\right] = \sum_{i=1}^M \mathrm{Var}[X_i] + \sum_{i \neq j} \mathrm{Cov}[X_i, X_j]$.}
 
 \begin{solutionorbox}[4in]
+  \[
+  \mathrm{Var}[\hat{F}(\mathbf{x})] = \mathrm{Var}\left[\frac{1}{M} \sum_{i=1}^M \hat{f}_i(\mathbf{x})\right] = \frac{1}{M^2} \mathrm{Var}\left[\sum_{i=1}^M \hat{f}_i(\mathbf{x})\right]
+  \]
+  \[
+  = \frac{1}{M^2} \left( \sum_{i=1}^M \mathrm{Var}[\hat{f}_i(\mathbf{x})] + \sum_{i \neq j} \mathrm{Cov}[\hat{f}_i(\mathbf{x}), \hat{f}_j(\mathbf{x})] \right)
+  \]
+  \[
+  = \frac{1}{M^2} \left( M\sigma^2 + \frac{M!}{(M-2)!}\rho\sigma^2 \right)
+  \]
+  \[
+  = \frac{1}{M^2} \left( M\sigma^2 + M(M-1)\rho\sigma^2 \right)
+  \]
+  \[
+  \mathrm{Var}[\hat{F}(\mathbf{x})] = \frac{\sigma^2}{M} + \rho\sigma^2\left(1 - \frac{1}{M}\right)
+  \]
 \end{solutionorbox}
 
 \newpage
@@ -401,6 +491,17 @@ Analyze the ensemble's variance as the number of learners $M$ becomes very large
 In one to two lines, explain what these limiting results reveal about \textit{why randomness is required} for Bagging to be successful in practice.
 
 \begin{solutionorbox}[4in]
+  based on my knowledge, I know that as M approaches infinity, the variance of the ensemble's prediction converges to 0, and the bias will be bigger if $\rho$ is 0, and vise versa. Lets prove that:
+  \[
+  \mathrm{Var}[\hat{F}(\mathbf{x})] = \frac{\sigma^2}{M} + \rho\sigma^2\left(1 - \frac{1}{M}\right)
+  \]
+  \[
+  lim_{M \to \infty} \mathrm{Var}[\hat{F}(\mathbf{x})] = lim_{M \to \infty} \left( \frac{\sigma^2}{M} + \rho\sigma^2\left(1 - \frac{1}{M}\right) \right)
+  \]
+  \[
+  = \rho \sigma^2
+  \]
+  As I mentioned earlier, if the base learners were perfectly uncorrelated ($\rho = 0$), variance would converge to 0. If the base learners were perfectly correlated ($\rho = 1$), variance would converge to $\sigma^2$. This shows that randomness is required for Bagging to be successful in practice because it helps to reduce the correlation between base learners, (the wisdom of crowds).
 \end{solutionorbox}
 
 \end{parts}

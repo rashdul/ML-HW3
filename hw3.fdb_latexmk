@@ -1,5 +1,5 @@
 # Fdb version 4
-["pdflatex"] 1760303920.04801 "d:/OneDrive/Johns_Hopkins/Classes/EN.601.475.01 (Machine Learning)/Homeworks/HW3/hw3.tex" "hw3.pdf" "hw3" 1760303924.57003 0
+["pdflatex"] 1760730791.62681 "d:/OneDrive/Johns_Hopkins/Classes/EN.601.475.01 (Machine Learning)/Homeworks/HW3/hw3.tex" "hw3.pdf" "hw3" 1760730796.8086 0
   "C:/Users/rashd/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map" 1760145829 81068 299f700eb05b1217173e62b88b513bd0 ""
   "C:/Users/rashd/AppData/Local/MiKTeX/fonts/pk/ljfour/jknappen/ec/dpi600/tcrm1095.pk" 1757615375 12668 0c278941b2febe66160d662a5462e94b ""
   "C:/Users/rashd/AppData/Local/MiKTeX/miktex/data/le/pdftex/pdflatex.fmt" 1757615043 13257343 40d2338f5cca80f2f427815e3b41a170 ""
@@ -247,10 +247,10 @@
   "C:/Users/rashd/AppData/Local/Programs/MiKTeX/tex/latex/wrapfig/wrapfig.sty" 1044403200 26220 3701aebf80ccdef248c0c20dd062fea9 ""
   "C:/Users/rashd/AppData/Local/Programs/MiKTeX/tex/latex/xcolor/xcolor.sty" 1729265222 55384 b454dec21c2d9f45ec0b793f0995b992 ""
   "C:/Users/rashd/AppData/Local/Programs/MiKTeX/tex/latex/xkeyval/xkeyval.sty" 1656236919 4937 4ce600ce9bd4ec84d0250eb6892fcf4f ""
-  "d:/OneDrive/Johns_Hopkins/Classes/EN.601.475.01 (Machine Learning)/Homeworks/HW3/hw3.tex" 1760303918 17459 7101c61896d4123111c40bc7ccb8eb2a ""
-  "hw3.aux" 1760303923 6373 b74efd0bb2a4f3cb745a720f7628972d "pdflatex"
-  "hw3.out" 1760303923 0 d41d8cd98f00b204e9800998ecf8427e "pdflatex"
-  "hw3.tex" 1760303918 17459 7101c61896d4123111c40bc7ccb8eb2a ""
+  "d:/OneDrive/Johns_Hopkins/Classes/EN.601.475.01 (Machine Learning)/Homeworks/HW3/hw3.tex" 1760730789 22105 24af2a8bb802db7d753106495a2037cf ""
+  "hw3.aux" 1760730795 6373 b74efd0bb2a4f3cb745a720f7628972d "pdflatex"
+  "hw3.out" 1760730795 0 d41d8cd98f00b204e9800998ecf8427e "pdflatex"
+  "hw3.tex" 1760730789 22105 24af2a8bb802db7d753106495a2037cf ""
   (generated)
   "hw3.aux"
   "hw3.log"
